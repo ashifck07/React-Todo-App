@@ -1,0 +1,9 @@
+# Ignore node_modules in both folders
+/server/node_modules/
+/todo/node_modules/
+
+# Other files to ignore (add more patterns as needed)
+*.log
+*.env
+.DS_Store
+npm-debug.log*
