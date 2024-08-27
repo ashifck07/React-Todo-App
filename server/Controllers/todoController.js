@@ -1,7 +1,7 @@
 const Todo = require('../Model/toDo')
 
 const createNewTsak = async (req, res) => {
-    const newTodo = await new Todo({ name: req.body.data })
+    const newTodo =  new Todo({ name: req.body.data })
     const response = await newTodo.save()
     res.status(200).json(response);
 }
@@ -21,16 +21,22 @@ const deleteTask = async (req, res) => {
     }
 };
 
+
 const completedTask = async (req, res) => {
-    const { _id } = req.body
-    const task = await Todo.findById(_id);
-    const updatedTask = await Todo.findByIdAndUpdate(
-        _id,
-        { isCompleted: !task.isCompleted },
-        { new: true } // This option returns the updated document
-    );
-    res.status(200).json(updatedTask);
-}
+    try {
+      const { _id } = req.body;
+        const task = await Todo.findById(_id);
+        if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+        task.isCompleted = !task.isCompleted;
+        await task.save();
+        res.status(200).json(task);
+    } catch (error) {
+      res.status(500).json({ error: "An error occurred while updating the task" });
+    }
+  };
+  
 
 module.exports = {
     createNewTsak, getAllTask, deleteTask, completedTask

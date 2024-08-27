@@ -1,63 +1,114 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import TodoItems from "./TodoItems";
+import { Link, Routes, Route, useLocation } from "react-router-dom";
 import "./style.css";
 
 const API_BASE = "http://localhost:4001/todo";
+
 const TodoHome = () => {
   const [items, setItems] = useState([]);
-  // Add input state, we will store the user's input in this state
   const [input, setInput] = useState("");
 
+  const location = useLocation();
   useEffect(() => {
-    GetTodos();
-  }, []);
-  // Store the target's value into the input state
-  const handleChange = (e) => {
-    setInput(e.target.value);
-  };
-
-  const addItem = () => {
-    axios.post(API_BASE + "/new", { data: input }).then((res) => {
-      GetTodos();
-      setInput("");
-    });
-  };
-
-  const GetTodos = () =>
     axios
       .get(API_BASE)
       .then((res) => {
         setItems(res.data.reverse());
       })
-      .catch((Error) => {});
+      .catch((err) => console.log(err));
+  }, [input]);
+
+  const handleChange = (e) => {
+    setInput(e.target.value);
+  };
+
+  const addItem = () => {
+    if (input) {
+      axios.post(API_BASE + "/new", { data: input }).then(() => {
+        setInput("");
+      });
+    }
+  };
 
   return (
     <div className="container">
       <div className="heading">
-        <h1>TO-DO-APP</h1>
+        <h1>
+          TO-DO<span className="head">APP</span>
+        </h1>
       </div>
-
       <div className="form">
-        <input type="text" value={input} onChange={handleChange}></input>
+        <input
+          type="text"
+          value={input}
+          onChange={handleChange}
+          placeholder="enter task"
+        />
         <button onClick={addItem}>
           <span>ADD</span>
         </button>
       </div>
-
+      <ul className="d-flex gap-3 p-0 justify-content-between">
+        <li className="list">
+          <Link
+            to="/"
+            className={`link ${location.pathname === "/" ? "underline" : ""}`}
+          >
+            All
+          </Link>
+        </li>
+        <li className="list">
+          <Link
+            to="/completed"
+            className={`link ${
+              location.pathname === "/completed" ? "underline" : ""
+            }`}
+          >
+            Completed
+          </Link>
+        </li>
+        <li className="list">
+          <Link
+            to="/incomplete"
+            className={`link ${
+              location.pathname === "/incomplete" ? "underline" : ""
+            }`}
+          >
+            Incomplete
+          </Link>
+        </li>
+      </ul>
       <div className="todolist">
-        {items.map((item, index) => (
-          <TodoItems
-            name={item.name}
-            id={item._id}
-            setItems={setItems}
-            isCompleted={item.isCompleted}
-            key={index}
+        <Routes>
+          <Route
+            path="/"
+            element={items.map((item) => (
+              <TodoItems key={item._id} item={item} setItems={setItems} />
+            ))}
           />
-        ))}
+          <Route
+            path="/completed"
+            element={items
+              .filter((item) => item.isCompleted)
+              .map((item) => (
+                <TodoItems key={item._id} item={item} setItems={setItems} />
+              ))}
+          />
+          <Route
+            path="/incomplete"
+            element={items
+              .filter((item) => !item.isCompleted)
+              .map((item) => (
+                <TodoItems key={item._id} item={item} setItems={setItems} />
+              ))}
+          />
+        </Routes>
       </div>
     </div>
   );
 };
 
 export default TodoHome;
+
