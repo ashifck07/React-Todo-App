@@ -3,6 +3,8 @@ import axios from "axios";
 import TodoItems from "./TodoItems";
 import { Link, Routes, Route, useLocation } from "react-router-dom";
 import "./style.css";
+import CompletedItem from "./CompletedItem";
+import InCompletedItem from "./InCompletedItem";
 
 const API_BASE = "http://localhost:4001/todo";
 
@@ -90,19 +92,12 @@ const TodoHome = () => {
           />
           <Route
             path="/completed"
-            element={items
-              .filter((item) => item.isCompleted)
-              .map((item) => (
-                <TodoItems key={item._id} item={item} setItems={setItems} />
-              ))}
+            element={
+            <CompletedItem items={items} setItems={setItems} />}
           />
           <Route
             path="/incomplete"
-            element={items
-              .filter((item) => !item.isCompleted)
-              .map((item) => (
-                <TodoItems key={item._id} item={item} setItems={setItems} />
-              ))}
+            element={<InCompletedItem items={items} setItems={setItems} />}
           />
         </Routes>
       </div>

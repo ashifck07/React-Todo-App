@@ -6,7 +6,7 @@ import {faTrashAlt} from '@fortawesome/free-solid-svg-icons'
 
 const API_BASE = "http://localhost:4001/todo";
 
-const TodoItems = ({ item, setItems }) => {
+const TodoItems = ({ item=[], setItems }) => {
   const { name, _id, isCompleted } = item;
   const [check, setCheck] = useState(isCompleted);
 
@@ -38,13 +38,14 @@ const TodoItems = ({ item, setItems }) => {
   };
 
   return (
+    <div>
     <div className={`todo ${check?"check":"unCheck"}`}>
       <input
         checked={check}
         className="box"
         type="checkbox"
         onChange={(e) => handleCheckBox(e, _id)}
-      />
+        />
       <div className={check ? "completed" : "text"}>{name}</div>
       <div className="delete-todo" onClick={() => deleteTodo(_id)}>
         <span>
@@ -52,6 +53,7 @@ const TodoItems = ({ item, setItems }) => {
         </span>
       </div>
     </div>
+  </div>
   );
 };
 
